@@ -7,6 +7,10 @@ Codebase for [MSPS: A Multi-objective Model for Multi-skill Project Scheduling P
 <img src="https://github.com/Zhijie-He/MSPS/blob/main/images/MSPS_generation_2d.gif"/>
 </p>
 
+
+## Abstract
+The growing need of responsiveness for enterprises facing market volatility raises a strong demand for flexibility in their human resource management. This paper presents a multi-objective model for Multi-skill Project Scheduling Problem. We **propose a new wage distribution method** in which different perform efficiencies of human resources are taken into account. The model aims at **minimizing project duration and project costs concurrently.** An improved NSGA-II algorithm is designed to solve the model. The algorithm introduces a multi-dimensional chromosome coding scheme to identify the priorities and staff allocation of each activity. Special chromosome crossover and mutation operation are employed to address resource conflicts and constraint violations. Eventually, A case study is presented to verify the efficiency of the proposed approach.
+
 ## Getting Started
 We use this repository with MATLAB2016a Windows.
 
