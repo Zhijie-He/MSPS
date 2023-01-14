@@ -43,64 +43,63 @@ including
 	Worker R1:1		Worker R1:2		Worker R1:3	
 	Worker R2:4	
 
-************Task 2 (Human Resource Assignment)
+**Task 2 (Human Resource Assignment)**
 
 	Worker R2:4		Worker R2:5		Worker R2:6		Worker R2:1	
 
-************Task 3 (Human Resource Assignment)
+**Task 3 (Human Resource Assignment)**
 
 	Worker R1:1		Worker R1:2		Worker R1:3	
 	Worker R3:7	
-************Task 4 (Human Resource Assignment)
+**Task 4 (Human Resource Assignment)**
 
 	Worker R2:6		Worker R2:1	
 	Worker R3:7		Worker R3:8		Worker R3:2		Worker R3:3	
-************Task 5 (Human Resource Assignment)
+**Task 5 (Human Resource Assignment)**
 
 	Worker R2:4		Worker R2:5	
-************Task 6 (Human Resource Assignment)
+**Task 6 (Human Resource Assignment)**
 
 	Worker R1:1		Worker R1:2		Worker R1:3		Worker R1:6	
 	Worker R3:7	
-************Task 7 (Human Resource Assignment)
+**Task 7 (Human Resource Assignment)**
 
 	Worker R1:1		Worker R1:2		Worker R1:3	
 	Worker R3:7		Worker R3:8	
-************Task 8 (Human Resource Assignment)
+**Task 8 (Human Resource Assignment)**
 
 	Worker R2:4		Worker R2:5		Worker R2:6	
 	Worker R3:7		Worker R3:8		Worker R3:1	
-************Task 9 (Human Resource Assignment)
+**Task 9 (Human Resource Assignment)**
 
 	Worker R2:4		Worker R2:5		Worker R2:6	
 
-************Task 10 (Human Resource Assignment)
+**Task 10 (Human Resource Assignment)**
 
 	Worker R1:1	
 	Worker R2:4		Worker R2:5		Worker R2:6	
 	Worker R3:7		Worker R3:8	
-************Task 11 (Human Resource Assignment)
+**Task 11 (Human Resource Assignment)**
 
 	Worker R2:1		Worker R2:2		Worker R2:3	
 	Worker R3:7	
-************Task 12 (Human Resource Assignment)
+**Task 12 (Human Resource Assignment)**
 
 	Worker R2:4		Worker R2:5		Worker R2:6		Worker R2:8	
-************Task 13 (Human Resource Assignment)
+**Task 13 (Human Resource Assignment)**
 
 	Worker R1:1		Worker R1:2	
 	Worker R3:7		Worker R3:8		Worker R3:5		Worker R3:6		Worker R3:3	
-************Task 14 (Human Resource Assignment)
+**Task 14 (Human Resource Assignment)**
 
 	Worker R2:4		Worker R2:5	
 	Worker R3:7		Worker R3:8		Worker R3:6	
-************Task 15 (Human Resource Assignment)
+**Task 15 (Human Resource Assignment)**
 
 	Worker R1:1	
 	Worker R2:2		Worker R2:3		Worker R2:7	
 
-************Task 16 (Human Resource Assignment)
+**Task 16 (Human Resource Assignment)**
 
 	Worker R2:4		Worker R2:5		Worker R2:6	
 	Worker R3:7		Worker R3:8	
-
