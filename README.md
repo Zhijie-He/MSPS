@@ -38,7 +38,7 @@ including
 
 
 ### Human Resource Assignment
-************Task 1 (Human Resource Assignment)
+**Task 1 (Human Resource Assignment)**
 
 	Worker R1:1		Worker R1:2		Worker R1:3	
 	Worker R2:4	
