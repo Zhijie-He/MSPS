@@ -1,4 +1,4 @@
-function DEnsga_2(popsize, generation)
+function DEnsga_2(popsize,generation)
 clc
 close all;
 
@@ -19,11 +19,15 @@ if generation < 10
 end
 
 % Get const values
-VArray = Const();                
-global VArraysum;                
-global break_indegree;                  
+VArray = Const();
+global R1;                         
+global R2; 
+global R3;                       
+global VArraysum;                  % The number of project tasks
+global indegree;                   
+global self;                       
+global candidate;                  
 global People;
-global break_self;
 
 %% Objective Function
 [M, V, ~, ~] = objective_description();
@@ -40,110 +44,67 @@ for i = 1 : generation
     tour = 2;
     parent_chromosome = tournament_selection(chromosome, pool, tour);     
     % intermediate_chromosome is a concatenation of current population and the offspring population
-    offspring_chromosome = genetic_operator(parent_chromosome,M,V,generation,i,VArray); 
+    offspring_chromosome = genetic_operator(parent_chromosome,M,V,generation,i,VArray);
     
     [main_pop,~] = size(chromosome);
-    [offspring_pop,~] = size(offspring_chromosome);                      
+    [offspring_pop,~] = size(offspring_chromosome);                       
     
     intermediate_chromosome(1:main_pop,:) = chromosome;                   
    
     intermediate_chromosome(main_pop + 1 : main_pop + offspring_pop,1 : M+V) = offspring_chromosome(:,1:M+V);
     
-    % Non-domination-sort of intermediate population
+     % Non-domination-sort of intermediate population
     intermediate_chromosome = non_domination_sort_mod(intermediate_chromosome, M, V);
     
     chromosome = replace_chromosome(intermediate_chromosome, M, V, popsize);
     
     fprintf('%d generations completed\n',i);
-    if M == 2
-        plot(chromosome(:,V + 1),chromosome(:,V + 2)/10000,'*');
-        xlabel('Completion cycle/week');
-        ylabel('Project cost/billion');
-        xlim([floor(min(chromosome(:,V + 1))) - 5  ceil(max(chromosome(:,V + 1))) + 5]);
-        ylim([floor(min(chromosome(:,V + 2)/10000))  ceil(max(chromosome(:,V + 2)/10000)) ]);
-        title('Multi-objective pareto diagram based on key resources');
-        pause(0.01);
-    elseif M ==3                                                           
-        clf                                                           
-        A=[chromosome(:,V + 1) chromosome(:,V + 2) chromosome(:,V + 3)/10000];
-        A=unique(A,'rows');
-        x=A(:,1);y=A(:,2);z=A(:,3);
-        %data interpolation
-        [X,Y,Z]=griddata(x,y,z,linspace(min(x),max(x))',linspace(min(y),max(y)),'v4');
-        mesh(X,Y,Z);
-        hold on 
-        scatter3(x,y,z,'filled');
-        xlim([floor(min(chromosome(:,V + 1))) - 5  ceil(max(chromosome(:,V + 1))) + 5]);
-        ylim([floor(min(chromosome(:,V + 2))) - 5  ceil(max(chromosome(:,V + 2))) + 5]);
-        zlim([floor(min(chromosome(:,V + 3)/10000))+0.2   ceil(max(chromosome(:,V + 3)/10000)) ]);
-        xlabel('Project A completion cycle/week');
-        ylabel('Project B completion period/week');
-        zlabel('Total project cost/billion');
-        title('Parato 3D surface plot');
-        pause(0.01);
+    plot(chromosome(:,V + 1),chromosome(:,V + 2)/10000,'*');
+    xlabel('Completion time/week');
+    ylabel('Project cost/billion');
+    xlim([floor(min(chromosome(:,V + 1))) - 5  ceil(max(chromosome(:,V + 1))) + 5]);
+    ylim([floor(min(chromosome(:,V + 2)/10000))  ceil(max(chromosome(:,V + 2)/10000)) ]);
+    title('Multi-objective pareto diagram based on multi-skill and key resources');
+    
+    % record as gif
+    set(gcf,'color','w'); % set figure background to white
+    drawnow;
+    frame = getframe(1);
+    im = frame2im(frame);
+    [imind,cm] = rgb2ind(im,256);
+    outfile = 'images/MSPS_generation_2d.gif';
+    % On the first loop, create the file. In subsequent loops, append.
+    if i==1
+        imwrite(imind, cm, outfile,'gif','DelayTime',0,'loopcount',inf);
+    else
+        imwrite(imind, cm, outfile,'gif','DelayTime',0,'writemode','append');
     end
 end
 %% save result
 save solution.txt chromosome -ASCII
 
 %% Visualization
-close all                                                                
-if M == 2
-    figure
-    plot(chromosome(:,V + 1),chromosome(:,V + 2)/10000,'*');
-    legend('Paroto algorithm');
-    legend('boxoff')
-    xlim([floor(min(chromosome(:,V + 1))) - 5  ceil(max(chromosome(:,V + 1))) + 5]);
-    ylim([floor(min(chromosome(:,V + 2)/10000))   ceil(max(chromosome(:,V + 2)/10000)) ]);
-    xlabel('Completion cycle/week');
-    ylabel('Project cost/billion');
-    title('Multi-objective pareto diagram based on key resources');
-    
-elseif M ==3    
-    figure
-    plot3(chromosome(:,V + 1),chromosome(:,V + 2),chromosome(:,V + 3)/10000,'*');
-    xlim([floor(min(chromosome(:,V + 1))) - 5  ceil(max(chromosome(:,V + 1))) + 5]);
-    ylim([floor(min(chromosome(:,V + 2))) - 5  ceil(max(chromosome(:,V + 2))) + 5]);
-    zlim([floor(min(chromosome(:,V + 3)/10000))+0.2   ceil(max(chromosome(:,V + 3)/10000)) ]);
-    xlabel('Project A completion cycle/week');
-    ylabel('Project B completion period/week');
-    zlabel('Project cost/billion');
-    title('Parato three-dimensional scatter plot');
-    
-    figure
-    A=[chromosome(:,V + 1) chromosome(:,V + 2) chromosome(:,V + 3)];
-    A=unique(A,'rows');                
-    x=A(:,1);y=A(:,2);z=A(:,3);
-    z=z/10000;
-    [X,Y,Z]=griddata(x,y,z,linspace(min(x),max(x))',linspace(min(y),max(y)),'v4');
-    mesh(X,Y,Z);
-    xlim([floor(min(x)) - 5  ceil(max(x)) + 5]);
-    ylim([floor(min(y)) - 5  ceil(max(y)) + 5]);
-    zlim([floor(min(z))   ceil(max(z)) ]);
-    hold on 
-    scatter3(x,y,z,'filled');
-    xlabel('Project A completion cycle/week');
-    ylabel('Project B completion period/week');
-    zlabel('Project cost/billion');
-    title('Parato 3D surface plot');
+close all                                                                 
+figure
+plot(chromosome(:,V + 1),chromosome(:,V + 2)/10000,'*');
+legend('Paroto algorithm');
+legend('boxoff')
+xlim([floor(min(chromosome(:,V + 1))) - 5  ceil(max(chromosome(:,V + 1))) + 5]);
+ylim([floor(min(chromosome(:,V + 2)/10000))   ceil(max(chromosome(:,V + 2)/10000)) ]);
+xlabel('Completion time/week');
+ylabel('Project cost/billion');
+title('Multi-objective pareto diagram based on multi-skill and key resources');
 
-    axis vis3d
-    for i=1:60
-        pause(0.2);
-        camorbit(10,0)
-        drawnow
-    end
-end
 
-[~,sor_index] = sort(chromosome(:,V+3));
-shortest = sor_index(end);
-test_x = chromosome(shortest,1:VArraysum);
-test_Peo_index = chromosome(shortest,VArraysum+1:V);
-[~,gante_tu, People_allocate] = TuoPu29F3(test_x,test_Peo_index,break_self,break_indegree,2,People);
-fprintf('The above is a time sequence with a total time of %.1f weeks \nThe total cost is %.4f ten thousand yuan\nThe Gantt chart is shown in the figure\n',max(gante_tu(:,4)),chromosome(shortest,V+M));
+[~,sor_index]=sort(chromosome(:,V+3));
+shortest=sor_index(end);
+test_x=chromosome(shortest,1:VArraysum);
+test_index=chromosome(shortest,VArraysum+1:VArraysum*2);
+test_part=chromosome(shortest,VArraysum*2+1:VArraysum*3);
+[~,gante_tu,People_allocate]=TuoPu29F3(test_x,test_index,test_part,self,candidate,indegree,R1,R2,R3,2,People);
+fprintf('The above is a time sequence with a total time of %.1f weeks \nThe total cost is %.4f ten thousand yuan\n The Gantt chart is shown in the figure\n',max(gante_tu(:,4)),chromosome(shortest,V+M));
 gante(gante_tu,VArray);
-
 % Save the allocation of human resources and store it in the People_allocate structure
-% PeopleAllocate(People_allocate);
-% fprintf('The human resource allocation corresponding to this plan is saved in the People_allocate.txt file\n');
+PeopleAllocate(People_allocate);
+fprintf('The human resource allocation corresponding to this plan is saved in the People_allocate.txt file\n');
 end

@@ -1,60 +1,78 @@
-function [Alltime,gante_tu,People_allocate] = TuoPu29F3(x,Peo_index,self,indegree,flag_F2,People)
+function [Alltime,gante_tu,People_allocate] = TuoPu29F3(x,index,part,self,candidate,indegree,R1,R2,R3,flag_F2,People)
 %topological sort
 global VArraysum;                    
-global bs;  % Adjacency matrix for new small items
-visit = zeros(1,VArraysum); % Access ID array 1 means access, 0 means no access
+global s;                           % Adjacency matrix
+
+visit = zeros(1,VArraysum);         % Access ID array 1 means access, 0 means no access
 
 gante_tu(1: VArraysum,1) = 1: VArraysum;
 gante_tu(1: VArraysum,2) = 1: VArraysum;
 
-used = zeros(1,VArraysum);   % Use the flag array to distinguish the activity number whose in-degree is 0 and in the execution queue
+for i = 1: VArraysum
+    self(i,1) = (1-index(i))*self(i,1) + index(i)*candidate(i,part(i),1);
+    self(i,2) = (1-index(i))*self(i,2) + index(i)*candidate(i,part(i),2);
+end
+
+used = zeros(1,VArraysum);               
 Alltime = 0;
 
-wait=[];                                     % waiting queue
-exe=[];                                      % execution queue
-flag_1 = 0;                                  % Execution end flag 1 Execution completed 0 Not executed
+wait=[];              % waiting list                    
+exe=[];                                     
+flag_1 = 0;                               
 
-in_exe=zeros(1,VArraysum);                   % Used to identify whether it is the first time to enter the execution queue
-
-
-global Pro_index;
+% The total number of people who have mastered technology
+R(1)=size(R1,2);                         
+R(2)=size(R2,2);                        
+R(3)=size(R3,2);                         
+in_exe=zeros(1,VArraysum);               
 
 while flag_1 ~= 1
     flag_1 = 0;
     result_max = [];
-    % Find out the node whose indegree is 0
+
     for k = 1 : VArraysum
         if ~indegree(k) && ~visit(k) && ~used(k)
             result_max = [result_max k];
         end
     end
-    L = size(result_max,2);       %The number of nodes whose in-degree is 0
+    L = size(result_max,2);                         
     if L == 1 && size(exe,2) == 0
         p = result_max(1);
         visit(p) = 1;
-        % Assign human resource to activity R1->R2->R3
-        People(Peo_index(Pro_index(1,p):Pro_index(2,p)),end - 1) = 0;
-        People_allocate(p).R = Peo_index(Pro_index(1,p):Pro_index(2,p));
-        
+        % Assign human resource to tasks R1->R2->R3
+        People(R1(1:self(p,3)),end - 1)=0;
+        People_allocate(p).R1=People(R1(1:self(p,3)),end);
+        [R1,R2,R3,R]=updateR(People);
+        People(R2(1:self(p,4)),end - 1)=0;
+        People_allocate(p).R2=People(R2(1:self(p,4)),end);
+        [R1,R2,R3,R]=updateR(People);
+        People(R3(1:self(p,5)),end - 1)=0;
+        People_allocate(p).R3=People(R3(1:self(p,5)),end);
+        [R1,R2,R3,R]=updateR(People);
+       
         enter_time = Alltime;
         if flag_F2 == 2             
-            fprintf('time=%d, %d enter \n',enter_time,p);
+            fprintf('time=%d, task %d enter \n',enter_time,p);
         end
         gante_tu(p,3) = enter_time;
         % Obtain the average proficiency under the current strategy
         aver_radio = efficiency(People_allocate(p),People);
-        Alltime = Alltime + self(p,1)/aver_radio;
+        Alltime = Alltime + self(result_max(1),2)/aver_radio;
         
         quit_time = Alltime;
         % Release occupied human resources
-        People(People_allocate(p).R,end - 1) = 1;    
+        People(People_allocate(p).R1,end - 1)=1;
+        People(People_allocate(p).R2,end - 1)=1;
+        People(People_allocate(p).R3,end - 1)=1;
+        [R1,R2,R3,R]=updateR(People);
+        
         if flag_F2 == 2
-            fprintf('time=%d, %d exit \n',quit_time,p);
+            fprintf('time=%d, task exit %d\n',quit_time,p);
         end
         gante_tu(p,4) = quit_time;
-        % Node Exit Subtract the out-degree of this node
+        
         for j = 1 : VArraysum 
-            if bs(p,j)
+            if s(p,j)
                 indegree(j) = indegree(j) - 1;
             end
         end
@@ -65,18 +83,40 @@ while flag_1 ~= 1
         if  size(result_max,2) ~= 0
             for u = 0 : L-1
                 p = result_max(index(end-u));
-                %Peo_index(Pro_index(1,p):Pro_index(2,p))
-                %sum(visit)
-                if sum(People(Peo_index(Pro_index(1,p):Pro_index(2,p)),end-1)) == self(p,3)
-                    People(Peo_index(Pro_index(1,p):Pro_index(2,p)),end-1) = 0;
-                    People_allocate(p).R = Peo_index(Pro_index(1,p):Pro_index(2,p));
-                    exe = [exe p];
-                    used(p) = 1;
-                    enter_time = Alltime;
-                    if flag_F2 == 2
-                        fprintf('time=%d, %d enter \n',enter_time,p);
+               
+                if R(1) >= self(p,3)
+                    People(R1(1:self(p,3)),end - 1)=0;
+                    People_allocate(p).R1=People(R1(1:self(p,3)),end);
+                    [R1,R2,R3,R]=updateR(People);
+                    if R(2) >= self(p,4)
+                        People(R2(1:self(p,4)),end - 1)=0;
+                        People_allocate(p).R2=People(R2(1:self(p,4)),end);
+                        [R1,R2,R3,R]=updateR(People);
+                        if R(3) >= self(p,5)
+                            People(R3(1:self(p,5)),end - 1)=0;
+                            People_allocate(p).R3=People(R3(1:self(p,5)),end);
+                            [R1,R2,R3,R]=updateR(People);
+                            exe=[exe p];
+                            used(p) = 1;
+                            enter_time = Alltime;
+                            if flag_F2 == 2
+                                fprintf('time=%d, task %d enter \n',enter_time,p);
+                            end
+                            gante_tu(p,3) = enter_time;
+                        else
+                            People(People_allocate(p).R1,end - 1)=1;
+                            People(People_allocate(p).R2,end - 1)=1;
+                            People_allocate(p).R1=[];
+                            People_allocate(p).R2=[];
+                            [R1,R2,R3,R]=updateR(People);
+                            wait = [wait p];
+                        end
+                    else
+                        People(People_allocate(p).R1,end - 1)=1;
+                        People_allocate(p).R1=[];
+                        updateR(People);
+                        wait = [wait p];
                     end
-                    gante_tu(p,3) = enter_time;
                 else
                     wait = [wait p];
                 end
@@ -84,26 +124,28 @@ while flag_1 ~= 1
         end
         time = [];
         for u = 1 : size(exe,2)
-            % The reason why you need to use the in_exe array to identify it here is that the time is changed in the structure instead of the array
-            % only need to process the activity that enters the execution queue for the first time
+          
             if in_exe(exe(u))==1
                 aver_radio = efficiency(People_allocate(exe(u)),People);
-                self(exe(u),2) = self(exe(u),1)/aver_radio;
+                self(exe(u),2) = self(exe(u),2)/aver_radio;
                 in_exe(exe(u))=0;
             end
-            time = [time self(exe(u),1)];
+            time = [time self(exe(u),2)];
         end
-        [mintime,~] = min(time);                 % Get the minimum time to execute the activity in the queue
-        c = [];                                  % c stores the activities that have completed the execution, that is, the activities that should be deleted from the execution queue
+        [mintime,~] = min(time);                 
+        c = [];                                 
         for u = 1 : size(exe,2)
-            self(exe(u),1) = self(exe(u),1) - mintime;
-            if self(exe(u),1) == 0
+            self(exe(u),2) = self(exe(u),2) - mintime;
+            if self(exe(u),2) == 0
                 c=[c u];
                 visit(exe(u)) = 1;
-                % Free up human resources
-                People(People_allocate(exe(u)).R,end - 1)=1;
+       
+                People(People_allocate(exe(u)).R1,end - 1)=1;
+                People(People_allocate(exe(u)).R2,end - 1)=1;
+                People(People_allocate(exe(u)).R3,end - 1)=1;
+                [R1,R2,R3,R]=updateR(People);
                 for j = 1 : VArraysum
-                    if bs(exe(u),j)
+                    if s(exe(u),j)
                         indegree(j) = indegree(j) - 1;
                     end
                 end
@@ -113,7 +155,7 @@ while flag_1 ~= 1
         for i = 1:size(c,2)
             quit_time = Alltime;
             if flag_F2 == 2
-                fprintf('time=%d, %d exit\n',quit_time,exe(c(i)));
+                fprintf('time=%d, task exit %d\n',quit_time,exe(c(i)));
             end
             gante_tu(exe(c(i)),4) = quit_time;
         end
@@ -125,11 +167,41 @@ while flag_1 ~= 1
 end
 end
 
+% Calculate R1 R2 R3 respectively according to the current manpower vacancy
+function [R1,R2,R3,R]=updateR(People)
+    R1=[];
+    R2=[];
+    R3=[];
+    sort_people_R1=sortrows(People,-1);
+    sort_people_R2=sortrows(People,-2);
+    sort_people_R3=sortrows(People,-3);
+    for a = 1:size(People,1)
+        if sort_people_R1(a,1)>0.5 && sort_people_R1(a,end-1)==1
+            R1=[R1 sort_people_R1(a,end)];
+        end
+        if sort_people_R2(a,2)>0.5 && sort_people_R2(a,end-1)==1
+            R2=[R2 sort_people_R2(a,end)];
+        end
+        if sort_people_R3(a,3)>0.5 && sort_people_R3(a,end-1)==1
+            R3=[R3 sort_people_R3(a,end)];
+        end
+    end
+    R(1)=size(R1,2);
+    R(2)=size(R2,2);
+    R(3)=size(R3,2);
+end
+
 % Calculate average proficiency based on manpower allocation
-function radio = efficiency(People_allocate,People)
-    SumAllocateR = size(People_allocate.R,2);
-    RadioAllocateR = sum(People(People_allocate.R,1));
-    radio = RadioAllocateR / SumAllocateR;
+function radio=efficiency(People_allocate,People)
+    SumAllocateR1 = size(People_allocate.R1,2);
+    SumAllocateR2 = size(People_allocate.R2,2);
+    SumAllocateR3 = size(People_allocate.R3,2);
+    SumAllocateR = SumAllocateR1+SumAllocateR2+SumAllocateR3;
+    RadioAllocateR1 = sum(People(People_allocate.R1,1));
+    RadioAllocateR2 = sum(People(People_allocate.R2,2));
+    RadioAllocateR3 = sum(People(People_allocate.R3,3));
+    RadioAllocateR = RadioAllocateR1+RadioAllocateR2+RadioAllocateR3;
+    radio=RadioAllocateR/SumAllocateR;
 end
 
 

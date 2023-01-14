@@ -1,9 +1,9 @@
 function gante(a,VArray)
-%% Draw the Gantt chart
+%% Draw gante chart
 K=size(VArray,2);    
-Vsum=max(a(:,2));    
+Vsum=max(a(:,2));   
 figure;
-w=0.5;              
+w=0.5;             
 set(gcf,'color','w');
 for ii=1:Vsum
     x=a(ii,[3 3 4 4]);
@@ -39,12 +39,16 @@ else
     text(tmax-2.5,1,'Project 1','fontsize',10);
 end
 
+
 title('Scheduling Gantt Chart');     
 xlabel('time/week');
-ylabel('Project Number');
+ylabel('Task Number');
 xmax=max(a(:,2));
 ymax=max(a(:,3));
 axis([0 ymax+10 0 xmax+1]);
 set(gca,'Box','on');
 set(gca,'YTick',0:Vsum);
 set(gca,'YTickLabel',[{''};num2str((1:Vsum)','J_{%d}');{''}]);
+x_width=30 ;y_width=25;
+set(gcf, 'PaperPosition', [0 0 x_width y_width]); %
+saveas(gcf,'images/project_gante.png')

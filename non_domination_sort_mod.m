@@ -4,8 +4,7 @@ function f = non_domination_sort_mod(x, M, V)
    M : The number of objective functions
    V : The number of decision variables
  %}
-[N, ~] = size(x);          
-
+[N, ~] = size(x);                           
 % Initialize the front number to 1.
 front = 1;
 
@@ -26,8 +25,8 @@ for i = 1 : N
         dom_less = 0;
         dom_equal = 0;
         dom_more = 0;
-        for k = 1 : M                                  
-            if (x(i,V + k) < x(j,V + k))               
+        for k = 1 : M                                 
+            if (x(i,V + k) < x(j,V + k))              
                 dom_less = dom_less + 1;
             elseif (x(i,V + k) == x(j,V + k))
                 dom_equal = dom_equal + 1;
@@ -42,17 +41,18 @@ for i = 1 : N
         end
     end   
     if individual(i).n == 0                         
-        x(i,M + V + 1) = 1;                      
-        F(front).f = [F(front).f i];               
+        x(i,M + V + 1) = 1;                          
+        F(front).f = [F(front).f i];                
     end
 end
 
 % Find the subsequent fronts
-while ~isempty(F(front).f)                      
+while ~isempty(F(front).f)                          
    Q = [];
    for i = 1 : length(F(front).f)
-       if ~isempty(individual(F(front).f(i)).p)     
+       if ~isempty(individual(F(front).f(i)).p)      
         	for j = 1 : length(individual(F(front).f(i)).p)
+
             	individual(individual(F(front).f(i)).p(j)).n = ...
                 	individual(individual(F(front).f(i)).p(j)).n - 1;      
         	   	if individual(individual(F(front).f(i)).p(j)).n == 0
@@ -64,10 +64,11 @@ while ~isempty(F(front).f)
        end
    end
    front =  front + 1;
-   F(front).f = Q;                        
+   F(front).f = Q;                         
 end
 
 [temp,index_of_fronts] = sort(x(:,M + V + 1));
+
 for i = 1 : length(index_of_fronts)
     sorted_based_on_front(i,:) = x(index_of_fronts(i),:);
 end

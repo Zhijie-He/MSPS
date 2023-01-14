@@ -1,13 +1,13 @@
 function f  = replace_chromosome(intermediate_chromosome, M, V,pop)
-% 传入中间种群  目标函数个数  决策变量总个数  最开始的设置的种群大小
+
 [N, ~] = size(intermediate_chromosome);                        
 
 [~,index] = sort(intermediate_chromosome(:,M + V + 1));
 
 for i = 1 : N
-    sorted_chromosome(i,:) = intermediate_chromosome(index(i),:);% 然后依据index可以真正的实现全部排序
+    sorted_chromosome(i,:) = intermediate_chromosome(index(i),:);
 end
-max_rank = max(intermediate_chromosome(:,M + V + 1));            % 找到最大rank的下标
+max_rank = max(intermediate_chromosome(:,M + V + 1));           
 % Start adding each front based on rank and crowing distance until the
 % whole population is filled.
 previous_index = 0;
