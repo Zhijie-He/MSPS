@@ -4,7 +4,7 @@ Codebase for [MSPS: A Multi-objective Model for Multi-skill Project Scheduling P
 ](https://ieeexplore.ieee.org/document/8948152) 
 
 <p align="center">
-<img src="https://github.com/Zhijie-He/MPPS/blob/main/images/MSPS_generation_2d.gif" width="80%" height="80%"/>
+<img src="https://github.com/Zhijie-He/MSPS/blob/main/images/MSPS_generation_2d.gif"/>
 </p>
 
 ## Getting Started
@@ -29,10 +29,7 @@ including
 - Human resources data
 
 ## Results
-
-
 <img src="https://github.com/Zhijie-He/MSPS/blob/main/images/MSPS_generation_2d.gif"/>
-
 ### Gante Chart
 <p align="center">
 <img src="https://github.com/Zhijie-He/MSPS/blob/main/images/project_gante.png"/>
